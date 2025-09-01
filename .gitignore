@@ -31,13 +31,13 @@ yarn-error.log*
 # Backend PHP
 backend/vendor/
 backend/composer.lock
-backend/storage/uploads/*
-backend/storage/cache/*
-backend/storage/logs/*
-!backend/storage/.gitkeep
-!backend/storage/uploads/.gitkeep
-!backend/storage/cache/.gitkeep
-!backend/storage/logs/.gitkeep
+backend/public/storage/uploads/*
+backend/public/storage/cache/*
+backend/public/storage/logs/*
+!backend/public/storage/.gitkeep
+!backend/public/storage/uploads/.gitkeep
+!backend/public/storage/cache/.gitkeep
+!backend/public/storage/logs/.gitkeep
 
 # Frontend Angular
 frontend/node_modules/

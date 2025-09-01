@@ -6,16 +6,48 @@
   padding: 20px;
   min-height: calc(100vh - 64px);
   background-color: #fafafa;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 }
 
-nav a {
+// Desktop Navigation
+.desktop-nav a {
   margin-left: 16px;
+  
+  &.active {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  mat-icon {
+    margin-right: 8px;
+  }
 }
 
-nav a.active {
-  background-color: rgba(255, 255, 255, 0.1);
+// Mobile Navigation
+.mobile-menu-button {
+  color: white;
 }
 
+// Menu items styling
+mat-menu {
+  a {
+    text-decoration: none;
+    color: inherit;
+    
+    &.active {
+      background-color: rgba(63, 81, 181, 0.1);
+      color: #3f51b5;
+    }
+    
+    mat-icon {
+      margin-right: 12px;
+    }
+  }
+}
+
+// General icon styling
 mat-icon {
   margin-right: 8px;
 }

@@ -2,7 +2,9 @@
   <mat-toolbar-row>
     <span>Document Search System</span>
     <span class="spacer"></span>
-    <nav>
+    
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav" *ngIf="!(isHandset$ | async)">
       <a mat-button routerLink="/documents" routerLinkActive="active">
         <mat-icon>description</mat-icon>
         Documents
@@ -12,6 +14,25 @@
         Search
       </a>
     </nav>
+    
+    <!-- Mobile Navigation -->
+    <button mat-icon-button 
+            class="mobile-menu-button" 
+            *ngIf="isHandset$ | async"
+            [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    
+    <mat-menu #menu="matMenu">
+      <a mat-menu-item routerLink="/documents" routerLinkActive="active">
+        <mat-icon>description</mat-icon>
+        <span>Documents</span>
+      </a>
+      <a mat-menu-item routerLink="/search" routerLinkActive="active">
+        <mat-icon>search</mat-icon>
+        <span>Search</span>
+      </a>
+    </mat-menu>
   </mat-toolbar-row>
 </mat-toolbar>
 

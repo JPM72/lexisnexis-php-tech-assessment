@@ -208,7 +208,7 @@ class FileService
 			'max_file_size_formatted' => $this->formatSize($this->maxFileSize),
 			'allowed_types' => $this->allowedTypes,
 			'disk_free_space' => disk_free_space($this->uploadDir),
-			'disk_free_space_formatted' => $this->formatSize(disk_free_space($this->uploadDir))
+			'disk_free_space_formatted' => $this->formatSize((int)disk_free_space($this->uploadDir))
 		];
 	}
 

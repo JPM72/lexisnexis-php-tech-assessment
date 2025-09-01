@@ -70,14 +70,12 @@ class DocumentService
 
 			return $documentData;
 		}
-		catch (Exception $e)
+		finally
 		{
-			// Cleanup uploaded file on error
 			if (file_exists($filePath))
 			{
 				unlink($filePath);
 			}
-			throw $e;
 		}
 	}
 
