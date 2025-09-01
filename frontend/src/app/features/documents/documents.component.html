@@ -1,95 +1,113 @@
 <div class="documents-container">
-  <mat-card class="upload-card">
-    <mat-card-header>
-      <mat-card-title>Upload Documents</mat-card-title>
-      <mat-card-subtitle>Upload PDF or text files to make them searchable</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <app-document-upload (uploadCompleted)="onUploadCompleted()"></app-document-upload>
-    </mat-card-content>
-  </mat-card>
+	<mat-card class="upload-card">
+		<mat-card-header>
+			<mat-card-title>Upload Documents</mat-card-title>
+			<mat-card-subtitle
+				>Upload PDF or text files to make them searchable</mat-card-subtitle
+			>
+		</mat-card-header>
+		<mat-card-content>
+			<app-document-upload
+				(uploadCompleted)="onUploadCompleted()"
+			></app-document-upload>
+		</mat-card-content>
+	</mat-card>
 
-  <mat-card class="documents-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>folder</mat-icon>
-        My Documents
-      </mat-card-title>
-      <mat-card-subtitle>All uploaded documents</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <div *ngIf="loading$ | async" class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Loading documents...</p>
-      </div>
+	<mat-card class="documents-card">
+		<mat-card-header>
+			<mat-card-title>
+				<mat-icon>folder</mat-icon>
+				My Documents
+			</mat-card-title>
+			<mat-card-subtitle>All uploaded documents</mat-card-subtitle>
+		</mat-card-header>
+		<mat-card-content>
+			<div *ngIf="loading$ | async" class="loading-container">
+				<mat-spinner diameter="40"></mat-spinner>
+				<p>Loading documents...</p>
+			</div>
 
-      <div *ngIf="!(loading$ | async)">
-        <mat-table [dataSource]="documents" class="documents-table">
-          <!-- Title Column -->
-          <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
-            <mat-cell *matCellDef="let document">
-              <span class="row-label-cell">{{ document.title }}</span>
-            </mat-cell>
-          </ng-container>
+			<div *ngIf="!(loading$ | async)">
+				<mat-table [dataSource]="dataSource" class="documents-table">
+					<!-- Title Column -->
+					<ng-container matColumnDef="title">
+						<mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
+						<mat-cell *matCellDef="let document">
+							<span class="row-label-cell">{{ document.title }}</span>
+						</mat-cell>
+					</ng-container>
 
-          <!-- Filename Column -->
-          <ng-container matColumnDef="filename">
-            <mat-header-cell *matHeaderCellDef>Filename</mat-header-cell>
-            <mat-cell *matCellDef="let document">
-              <mat-icon class="file-icon">description</mat-icon>
-              {{ document.filename }}
-            </mat-cell>
-          </ng-container>
+					<!-- Filename Column -->
+					<ng-container matColumnDef="filename">
+						<mat-header-cell *matHeaderCellDef>Filename</mat-header-cell>
+						<mat-cell *matCellDef="let document">
+							<mat-icon class="file-icon">description</mat-icon>
+							{{ document.filename }}
+						</mat-cell>
+					</ng-container>
 
-          <!-- Size Column -->
-          <ng-container matColumnDef="size">
-            <mat-header-cell *matHeaderCellDef>Size</mat-header-cell>
-            <mat-cell *matCellDef="let document">
-              {{ formatFileSize(document.file_size) }}
-            </mat-cell>
-          </ng-container>
+					<!-- Size Column -->
+					<ng-container matColumnDef="size">
+						<mat-header-cell *matHeaderCellDef>Size</mat-header-cell>
+						<mat-cell *matCellDef="let document">
+							{{ formatFileSize(document.file_size) }}
+						</mat-cell>
+					</ng-container>
 
-          <!-- Type Column -->
-          <ng-container matColumnDef="type">
-            <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
-            <mat-cell *matCellDef="let document">
-              {{ document.mime_type }}
-            </mat-cell>
-          </ng-container>
+					<!-- Type Column -->
+					<ng-container matColumnDef="type">
+						<mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+						<mat-cell *matCellDef="let document">
+							{{ document.mime_type }}
+						</mat-cell>
+					</ng-container>
 
-          <!-- Created Column -->
-          <ng-container matColumnDef="created">
-            <mat-header-cell *matHeaderCellDef>Created</mat-header-cell>
-            <mat-cell *matCellDef="let document">
-              <span title="{{ document.created_at | date:'full' }}">{{ document.created_at | date:'dd/MM/yyyy' }}</span>
-            </mat-cell>
-          </ng-container>
+					<!-- Created Column -->
+					<ng-container matColumnDef="created">
+						<mat-header-cell *matHeaderCellDef>Created</mat-header-cell>
+						<mat-cell *matCellDef="let document">
+							<span title="{{ document.created_at | date : 'full' }}">{{
+								document.created_at | date : "dd/MM/yyyy"
+							}}</span>
+						</mat-cell>
+					</ng-container>
 
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-            <mat-cell *matCellDef="let document">
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteDocument(document.id)"
-                matTooltip="Delete document">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-cell>
-          </ng-container>
+					<!-- Actions Column -->
+					<ng-container matColumnDef="actions">
+						<mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+						<mat-cell *matCellDef="let document">
+							<button
+								mat-icon-button
+								color="warn"
+								(click)="deleteDocument(document.id)"
+								matTooltip="Delete document"
+							>
+								<mat-icon>delete</mat-icon>
+							</button>
+						</mat-cell>
+					</ng-container>
 
-          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
+					<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+					<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+				</mat-table>
 
-        <div *ngIf="documents.length === 0" class="no-documents">
-          <mat-icon>description</mat-icon>
-          <h3>No documents uploaded yet</h3>
-          <p>Upload your first document using the form above.</p>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
+				<mat-paginator
+					[length]="paginationInfo?.total || 0"
+					[pageSize]="pageSize"
+					[pageSizeOptions]="[5, 10, 20]"
+					[pageIndex]="(paginationInfo?.current_page || 1) - 1"
+					showFirstLastButtons
+					aria-label="Select page of documents"
+					(page)="onPageChange($event)"
+				>
+				</mat-paginator>
+
+				<div *ngIf="dataSource.data.length === 0" class="no-documents">
+					<mat-icon>description</mat-icon>
+					<h3>No documents uploaded yet</h3>
+					<p>Upload your first document using the form above.</p>
+				</div>
+			</div>
+		</mat-card-content>
+	</mat-card>
 </div>

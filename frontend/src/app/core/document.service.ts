@@ -38,8 +38,6 @@ export class DocumentService {
       map(response => {
         this.loadingSubject.next(false);
         if (response.success) {
-          // Refresh documents list after upload
-          this.loadDocuments().subscribe();
           return response.data;
         }
         throw new Error(response.message);
@@ -54,8 +52,6 @@ export class DocumentService {
       map(response => {
         this.loadingSubject.next(false);
         if (response.success) {
-          // Refresh documents list after deletion
-          this.loadDocuments().subscribe();
           return response.data;
         }
         throw new Error(response.message);

@@ -4,6 +4,22 @@
 	row-gap: 1rem;
 }
 
+.documents-table mat-row mat-icon {
+	margin-right: 0.5rem;
+	overflow: visible;
+}
+
+// .mat-column-size,
+// .mat-column-created,
+// .mat-column-type {
+// 	max-width: 8rem;
+// }
+
+.mat-column-title,
+.mat-column-filename {
+	flex-grow: 3;
+}
+
 .loading-container {
 	display: flex;
 	flex-direction: column;
