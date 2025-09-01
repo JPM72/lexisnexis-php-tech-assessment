@@ -85,7 +85,7 @@ class TextExtractor
 		// Ensure UTF-8 encoding
 		if (!mb_check_encoding($text, 'UTF-8'))
 		{
-			$text = mb_convert_encoding($text, 'UTF-8', 'auto');
+			$text = mb_convert_encoding($text, 'UTF-8');
 		}
 
 		return $text;
