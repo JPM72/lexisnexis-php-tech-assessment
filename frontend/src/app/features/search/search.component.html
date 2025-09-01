@@ -1,0 +1,262 @@
+<div class="search-container">
+  <!-- Search Input Section -->
+  <mat-card class="search-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>search</mat-icon>
+        Document Search
+      </mat-card-title>
+      <mat-card-subtitle>Search through uploaded documents with real-time results</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Main Search Input -->
+      <div class="search-input-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search documents...</mat-label>
+          <input
+            matInput
+            [(ngModel)]="searchQuery"
+            (input)="onSearchInput()"
+            placeholder="Enter your search terms..."
+            autocomplete="off">
+          <mat-icon matPrefix>search</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            *ngIf="searchQuery"
+            (click)="clearSearch()"
+            matTooltip="Clear search">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="performAdvancedSearch()"
+          [disabled]="searchQuery.length < 2"
+          class="search-button">
+          <mat-icon>search</mat-icon>
+          Search
+        </button>
+      </div>
+
+      <!-- Advanced Search Options -->
+      <div class="advanced-options" *ngIf="searchQuery.length >= 2">
+        <mat-divider class="options-divider"></mat-divider>
+
+        <div class="options-row">
+          <!-- Sort By -->
+          <mat-form-field appearance="outline" class="option-field">
+            <mat-label>Sort by</mat-label>
+            <mat-select [(value)]="sortBy" (selectionChange)="onSortChange()">
+              <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Sort Order -->
+          <mat-form-field appearance="outline" class="option-field">
+            <mat-label>Order</mat-label>
+            <mat-select [(value)]="sortOrder" (selectionChange)="onSortChange()">
+              <mat-option *ngFor="let option of sortOrderOptions" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Search Mode -->
+          <mat-form-field appearance="outline" class="option-field">
+            <mat-label>Search Mode</mat-label>
+            <mat-select
+              [(value)]="searchMode"
+              (selectionChange)="onSortChange()"
+              [matTooltip]="getSearchModeTooltip()">
+              <mat-option *ngFor="let option of searchModeOptions" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Results Per Page -->
+          <mat-form-field appearance="outline" class="option-field">
+            <mat-label>Results per page</mat-label>
+            <mat-select [(value)]="resultsPerPage" (selectionChange)="onSortChange()">
+              <mat-option *ngFor="let count of resultsPerPageOptions" [value]="count">
+                {{ count }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Search Results Section -->
+  <div class="results-section" *ngIf="searchQuery.length >= 2">
+    <!-- Performance Metrics -->
+    <mat-card class="metrics-card" *ngIf="searchMetadata$ | async as metadata">
+      <mat-card-content>
+        <div class="metrics-row">
+          <div class="metric">
+            <mat-icon>timer</mat-icon>
+            <span class="metric-value">{{ formatExecutionTime(metadata.execution_time_ms) }}</span>
+            <span class="metric-label">Execution Time</span>
+          </div>
+
+          <div class="metric">
+            <mat-icon>description</mat-icon>
+            <span class="metric-value">{{ (searchResults$ | async)?.length || 0 }}</span>
+            <span class="metric-label">Results Found</span>
+          </div>
+
+          <div class="metric">
+            <mat-icon>settings</mat-icon>
+            <span class="metric-value">{{ metadata.search_mode }}</span>
+            <span class="metric-label">Search Mode</span>
+          </div>
+
+          <div class="metric">
+            <mat-icon>sort</mat-icon>
+            <span class="metric-value">{{ metadata.sort_by }}</span>
+            <span class="metric-label">Sort By</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Loading Indicator -->
+    <div class="loading-container" *ngIf="loading$ | async">
+      <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+      <p>Searching documents...</p>
+    </div>
+
+    <!-- Search Results -->
+    <div class="results-container" *ngIf="!(loading$ | async)">
+      <!-- No Results -->
+      <mat-card class="no-results-card" *ngIf="(searchResults$ | async)?.length === 0">
+        <mat-card-content>
+          <div class="no-results">
+            <mat-icon>search_off</mat-icon>
+            <h3>No documents found</h3>
+            <p>Try adjusting your search terms or using different search mode.</p>
+
+            <div class="search-tips">
+              <h4>Search Tips:</h4>
+              <ul>
+                <li><strong>Natural Language:</strong> "document about search"</li>
+                <li><strong>Boolean:</strong> +document +search -ignore</li>
+                <li><strong>Wildcard:</strong> docum* (matches document, documents, etc.)</li>
+              </ul>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Results List -->
+      <mat-card class="results-card" *ngIf="(searchResults$ | async)?.length! > 0">
+        <mat-card-header>
+          <mat-card-title>
+            Search Results
+            <mat-chip class="results-count">
+              {{ (searchResults$ | async)?.length }} results
+            </mat-chip>
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-list class="results-list">
+            <mat-list-item
+              *ngFor="let result of searchResults$ | async; trackBy: trackByDocumentId"
+              class="result-item">
+
+              <!-- Document Icon and Title -->
+              <mat-icon matListItemIcon class="file-icon">description</mat-icon>
+
+              <div matListItemTitle class="result-title">
+                <h4 [innerHTML]="result.title_highlighted || result.title"></h4>
+                <div class="result-meta">
+                  <span class="filename">{{ result.filename }}</span>
+                  <span class="separator">•</span>
+                  <span class="file-size">{{ formatFileSize(result.file_size) }}</span>
+                  <span class="separator">•</span>
+                  <span class="mime-type">{{ result.mime_type }}</span>
+                  <span class="separator">•</span>
+                  <span class="date">{{ result.created_at | date:'short' }}</span>
+                </div>
+              </div>
+
+              <!-- Relevance Score -->
+              <div matListItemMeta class="result-score">
+                <div class="relevance-section">
+                  <div class="score-stars">
+                    <mat-icon
+                      *ngFor="let star of getRelevanceStars(result.relevance_score)"
+                      class="star">
+                      star
+                    </mat-icon>
+                  </div>
+                  <span class="score-text">
+                    {{ result.relevance_score.toFixed(2) || '0.00' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Content Snippet -->
+              <div matListItemLine class="result-snippet" *ngIf="result.snippet">
+                <p [innerHTML]="result.snippet"></p>
+              </div>
+
+              <mat-divider></mat-divider>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Current Search Query Display -->
+    <mat-card class="query-card" *ngIf="currentQuery$ | async as query">
+      <mat-card-content>
+        <div class="current-query">
+          <mat-icon>info</mat-icon>
+          <span>Searching for: <strong>"{{ query }}"</strong></span>
+          <button mat-icon-button (click)="clearSearch()" matTooltip="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Welcome Message when no search -->
+  <mat-card class="welcome-card" *ngIf="searchQuery.length < 2">
+    <mat-card-content>
+      <div class="welcome-content">
+        <mat-icon class="welcome-icon">search</mat-icon>
+        <h2>Search Your Documents</h2>
+        <p>Enter at least 2 characters to start searching through your uploaded documents.</p>
+
+        <div class="search-features">
+          <div class="feature">
+            <mat-icon>bolt</mat-icon>
+            <span>Real-time search with debouncing</span>
+          </div>
+          <div class="feature">
+            <mat-icon>highlight</mat-icon>
+            <span>Highlighted search results</span>
+          </div>
+          <div class="feature">
+            <mat-icon>sort</mat-icon>
+            <span>Sort by relevance or date</span>
+          </div>
+          <div class="feature">
+            <mat-icon>speed</mat-icon>
+            <span>Performance metrics display</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

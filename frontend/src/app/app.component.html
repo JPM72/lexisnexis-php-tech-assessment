@@ -1,0 +1,20 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span>Document Search System</span>
+    <span class="spacer"></span>
+    <nav>
+      <a mat-button routerLink="/documents" routerLinkActive="active">
+        <mat-icon>description</mat-icon>
+        Documents
+      </a>
+      <a mat-button routerLink="/search" routerLinkActive="active">
+        <mat-icon>search</mat-icon>
+        Search
+      </a>
+    </nav>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

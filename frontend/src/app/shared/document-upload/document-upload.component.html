@@ -1,0 +1,84 @@
+<div class="upload-container">
+  <div 
+    class="dropzone" 
+    [class.dragover]="isDragOver"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onFileDropped($event)"
+    (click)="fileInput.click()">
+    
+    <div class="upload-content">
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+      <h3>Drop files here or click to browse</h3>
+      <p>Supported formats: PDF, TXT (max 10MB)</p>
+    </div>
+    
+    <input 
+      #fileInput
+      type="file"
+      (change)="onFileSelected($event)"
+      accept=".pdf,.txt,text/plain,application/pdf"
+      style="display: none"
+      multiple>
+  </div>
+
+  <!-- Selected files list -->
+  <div *ngIf="selectedFiles.length > 0" class="selected-files">
+    <h4>Selected Files:</h4>
+    <mat-list>
+      <mat-list-item *ngFor="let file of selectedFiles; let i = index">
+        <mat-icon matListItemIcon>description</mat-icon>
+        <div matListItemTitle>{{ file.name }}</div>
+        <div matListItemLine>{{ formatFileSize(file.size) }} • {{ file.type }}</div>
+        <button 
+          mat-icon-button 
+          matListItemMeta
+          (click)="removeFile(i)"
+          color="warn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+    
+    <!-- Upload button -->
+    <div class="upload-actions">
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="uploadFiles()"
+        [disabled]="uploading || selectedFiles.length === 0">
+        <mat-icon>upload</mat-icon>
+        {{ uploading ? 'Uploading...' : 'Upload Files' }}
+      </button>
+      <button 
+        mat-button 
+        (click)="clearFiles()"
+        [disabled]="uploading">
+        Clear All
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload progress -->
+  <div *ngIf="uploading" class="upload-progress">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <!-- Upload results -->
+  <div *ngIf="uploadResults.length > 0" class="upload-results">
+    <h4>Upload Results:</h4>
+    <mat-list>
+      <mat-list-item *ngFor="let result of uploadResults">
+        <mat-icon 
+          matListItemIcon
+          [color]="result.success ? 'primary' : 'warn'">
+          {{ result.success ? 'check_circle' : 'error' }}
+        </mat-icon>
+        <div matListItemTitle>{{ result.filename }}</div>
+        <div matListItemLine>{{ result.message }}</div>
+      </mat-list-item>
+    </mat-list>
+    
+    <button mat-button (click)="clearResults()">Clear Results</button>
+  </div>
+</div>
